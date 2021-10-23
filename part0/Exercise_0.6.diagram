@@ -1,0 +1,43 @@
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+server-->browser: HTML-code
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.js
+server-->browser: main.js
+
+note over browser:
+browser starts executing js-code
+that requests JSON data from server 
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+server-->browser: [{ content: "HTML", content-type: application/json}]
+
+note over browser:
+browser executes the event handler
+that renders notes to display
+end note
+
+
+
+note over browser:
+User writes note in the text area
+and presses the submit button
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/notes
+server-->browser: [{ content: "HTML", content-type: application/json}]
+
+
+note over server:
+The note is added to the list of
+already created notes
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
+server-->browser: [{ content: "HTML", content-type: application/json}]
+
+note over browser:
+browser executes the event handler
+that renders notes to display
+end note
