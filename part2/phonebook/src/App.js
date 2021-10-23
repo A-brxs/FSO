@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 const App = () => {
+  console.log('const App loaded')
   const [ persons, setPersons ] = useState([
     { name: 'Arto Hellas' }
   ]) 
@@ -11,20 +12,31 @@ const App = () => {
     setNewPerson(event.target.value)
   }
 
-  const addPerson = (event) => {
-    event.preventDefault()
+  const addPerson = () => {
+    console.log('this is newPerson:',newPerson)
+    console.log('this is persons',persons)
     const personObject = {
       name: newPerson
     }
-  
     setPersons(persons.concat(personObject))
     setNewPerson('')
+  }
+  
+  const checkPerson = () => persons.find( who => who.name === newPerson )
+  
+  const processPerson = (event) => {
+    console.log('This is processPerson event:',event)
+    console.log('this is checkP()',checkPerson()) 
+    event.preventDefault()
+    checkPerson() 
+    ? window.alert(`${newPerson} is already in the database!`)
+    : addPerson()   
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
+      <form onSubmit={processPerson}>
         <div>
           name: <input   value={newPerson}  onChange={handePersonChange}/>
         </div>
@@ -36,7 +48,6 @@ const App = () => {
         <ul>
           {persons.map(person => <li key={person.name}> {person.name} </li>)}
         </ul>
-      <div>debug: {newPerson}</div>
     </div>
   )
 }
