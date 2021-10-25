@@ -7,9 +7,6 @@ const App = () => {
   ]) 
   const [ newName, setNewName ] = useState('') 
   const [ newNumber, setNewNumber ] = useState('') 
-  //const [ newPerson, setNewPerson ] = useState(
-  //  { name: '', number: '' }
-  //) 
   
   const handleNameChange = (event) => {
     console.log('handleNameChange',event.target.value)
@@ -19,14 +16,6 @@ const App = () => {
     console.log('handleNumberChange',event.target.value)
     setNewNumber(event.target.value)
   }
-//  const handlePersonChange = (event) => {
-//    console.log('handlePersonChange',event.target.value)
-//    const value = event.target.value;
-//    setNewPerson({
-//      ...newPerson,
-//      [event.target.name]: value
-//    });
-//  }
 
   const addPerson = () => {
     console.log('this is persons',persons)
@@ -36,12 +25,11 @@ const App = () => {
     }
     console.log('this is personObject',personObject)
     setPersons(persons.concat(personObject))
-//    setNewPerson({name: '', number: ''})
     setNewName('')
     setNewNumber('')
   }
   
-  const checkPerson = () => persons.find( who => who.name === newName.name )
+  const checkPerson = () => persons.find( who => who.name === newName && who.number === newNumber )
   
   const processPerson = (event) => {
     console.log('This is processPerson event:',event)
