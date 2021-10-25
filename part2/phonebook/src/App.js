@@ -1,5 +1,42 @@
 import React, { useState } from 'react'
 
+const Search = (props) => {
+  const {newSearch, handleSearch} = props
+  console.log('Search loaded')
+  console.log('newSearch: ',newSearch)
+  console.log('handleSearch: ',handleSearch)
+  return (
+    <div>
+    filter shown with <input name="filter" value={newSearch}  onChange={handleSearch}/>
+    </div>
+  )
+}
+
+const PersonForm = ({process,newName,handleNameChange,newNumber,handleNumberChange}) => {
+  return (
+    <div>
+      <form onSubmit={process}>
+        <div> name: <input  name="name" value={newName}  onChange={handleNameChange}/> </div>
+        <div> number: <input  name="number" value={newNumber}  onChange={handleNumberChange}/> </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+const Filter = ({persons,search}) => {
+  const filteredPersons = persons.filter( who => who.name.toLowerCase().includes(search.toLowerCase()) )
+  return (
+    <div>
+      <ul>
+        {filteredPersons.map(person => <li key={person.id}> {person.name}  {person.number} </li>)}
+      </ul>
+    </div>
+  )
+}
+
 const App = () => {
   console.log('const App loaded')
   const [persons, setPersons] = useState([
@@ -24,7 +61,16 @@ const App = () => {
     console.log('handleSearch',event.target.value)
     setSearch(event.target.value)
   }
-
+  
+  const processPerson = (event) => {
+    console.log('This is processPerson event:',event)
+    console.log('this is checkP()',checkPerson()) 
+    event.preventDefault()
+    checkPerson() 
+    ? window.alert(`${newName} with ${newNumber} is already in the database!`)
+    : addPerson()   
+  }
+  
   const addPerson = () => {
     console.log('this is persons',persons)
     const personObject = {
@@ -40,39 +86,18 @@ const App = () => {
   
   const checkPerson = () => persons.find( who => who.name === newName && who.number === newNumber )
   
-  const filteredPersons = persons.filter( who => who.name.toLowerCase().includes(newSearch.toLowerCase()) )
-
-  const processPerson = (event) => {
-    console.log('This is processPerson event:',event)
-    console.log('this is checkP()',checkPerson()) 
-    event.preventDefault()
-    checkPerson() 
-    ? window.alert(`${newName} with ${newNumber} is already in the database!`)
-    : addPerson()   
-  }
-
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with <input name="filter" value={newSearch}  onChange={handleSearch}/>
-      </div>
+        <Search newSearch={newSearch} handleSearch={handleSearch}/>  
       <h3> Add a new </h3>
-      <form onSubmit={processPerson}>
-        <div> name: <input  name="name" value={newName}  onChange={handleNameChange}/> </div>
-        <div> number: <input  name="number" value={newNumber}  onChange={handleNumberChange}/> </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-        <ul>
-          {persons.map(person => <li key={person.id}> {person.name}  {person.number} </li>)}
-        </ul>
-        <p>filtered</p>
-        <ul>
-          {filteredPersons.map(person => <li key={person.id}> {person.name}  {person.number} </li>)}
-        </ul>
+        <PersonForm 
+          process={processPerson} 
+          newName={newName} handleNameChange={handleNameChange} 
+          newNumber={newNumber} handleNumberChange={handleNumberChange} 
+        />
+      <h3>Numbers</h3>
+        <Filter persons={persons} search={newSearch}/>
     </div>
   )
 }
