@@ -28,7 +28,7 @@ const Filter = (props) => {
   }
   if (filteredCountries.length === 1 ) {
     return (
-      <Countryinfo info={filteredCountries} />
+      <Countryinfo info={filteredCountries} weather={props.weather}/>
     )
   }
   return (
@@ -55,14 +55,47 @@ const Countryinfo = (props) => {
       {<img 
       src={info[0].flags.png}
       alt={"Flag of " + info[0].name}></img>}
+      <Weather capital={info[0].capital} weather={props.weather}/>
     </div>
   )
+}
+
+const Weather = ({capital}) => {
+  const access_key = process.env.REACT_APP_WEATHER_API_KEY
+    
+  let {weather} = getWeather(access_key,capital)
+  console.log('this is weather: ',weather)
+  //let src = currentWeather.current.weather_icons[0]
+  //let winds = currentWeather.current.wind_speed
+  //let windd = currentWeather.current.wind_dir
+  
+  return (
+    <div>
+      {<h3>Weather in {capital}</h3>}
+      {<p>Temperature: {weather}</p>}
+      {
+        //<img 
+        //src={}
+        //alt={"Weather of " + capital}></img>}      
+        //{<p>Wind: {} mph, direction {}</p>
+      }
+    </div>
+  )
+  
+}
+
+const getWeather = (access_key,country) => {
+  const request = axios.get(`http://api.weatherstack.com/current?access_key=${access_key}&query=${country}`)
+  return (
+    request.then(response => response.data),
+    console.log('this is request: ',request))
 }
 
 const App = () => {
   console.log('const App loaded')
   const [countries, setCountries] = useState([])
   const [ newSearch, setSearch ] = useState('ma') 
+  const [weather, setWeather] = useState([])
 
   const handleSearch = (event) => {
     console.log('handleSearch',event.target.value)
@@ -70,7 +103,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log('effect')
+    console.log('country effect')
     axios
       .get('https://restcountries.com/v2/all')
       .then(response => {
@@ -83,7 +116,7 @@ const App = () => {
   return (
     <div>
         <Search newSearch={newSearch} handleSearch={handleSearch}/>  
-        <Filter country={countries} search={newSearch}/>
+        <Filter country={countries} search={newSearch} weather={weather}/>
     </div>
   )
 
