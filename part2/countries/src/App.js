@@ -72,7 +72,7 @@ const Weather = ({capital}) => {
   return (
     <div>
       {<h3>Weather in {capital}</h3>}
-      {<p>Temperature: {weather}</p>}
+      {<p>Temperature: {weather.temperature}</p>}
       {
         //<img 
         //src={}

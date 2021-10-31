@@ -75,9 +75,14 @@ const App = () => {
       id: persons.length + 1
     }
     console.log('this is personObject',personObject)
-    setPersons(persons.concat(personObject))
-    setNewName('')
-    setNewNumber('')
+    axios
+    .post('http://localhost:3001/persons',personObject)
+    .then(response => {
+      console.log('create person response: ',response)
+      setPersons(persons.concat(personObject))
+      setNewName('')
+      setNewNumber('')
+      })
   }
   
   const checkPerson = () => persons.find( who => who.name === newName && who.number === newNumber )
