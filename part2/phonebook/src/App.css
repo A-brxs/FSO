@@ -1,0 +1,19 @@
+.error {
+    color: rgb(255, 103, 77);
+    background: rgb(107, 115, 189);
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+.notif {
+    color: rgb(238, 0, 0);
+    background: rgb(52, 158, 177);
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personSrv from './services/persons'
+import './index.css'
 
 const Search = (props) => {
   const {newSearch, handleSearch} = props
@@ -40,6 +41,30 @@ const Filter = ({persons,search,deletePerson}) => {
   )
 }
 
+const Errornotif = ({message}) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
+
+const Positivenotif = ({message}) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="notif">
+      {message}
+    </div>
+  )
+}
+
 
 const App = () => {
   console.log('const App loaded')
@@ -47,7 +72,9 @@ const App = () => {
   const [ newName, setNewName ] = useState('') 
   const [ newNumber, setNewNumber ] = useState('') 
   const [ newSearch, setSearch ] = useState('') 
-  
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorMsg, setErrorMsg] = useState(null)
+
   const handleNameChange = (event) => {
     console.log('handleNameChange',event.target.value)
     setNewName(event.target.value)
@@ -89,67 +116,85 @@ const App = () => {
       setNewName('')
       setNewNumber('')
     })
-  }
-  
-  const checkPerson = () => persons.find( who => who.name === newName && who.number !== newNumber )
-  
-  const deletePerson = (id) => {
-    if (window.confirm(`Do you really want to delete person iD ${id}`)) {
-      console.log('deletePerson:',persons)
-      personSrv.remove(id)
-      updatePersons()
-      }
-  }
-  
-  const updatePersons = () => {
-    personSrv
-    .getAll()
-    .then(response => {
-      console.log('updated people')
-      console.log(response)
-      setPersons(response)
-    })
-  }
-  
-  const updateNumber = (newname,newnumber) => {
-    if (window.confirm(`Do you want to update ${newname} with ${newnumber}`)) {
-      let newperson = persons.find(p => p.name === newname)
-
-      const newPersonObject = {
-        ...newperson,
-        number: newnumber
-      }
+    showNotif(personObject.name)
+    }
+    
+    const checkPerson = () => persons.find( who => who.name === newName && who.number !== newNumber )
+    
+    const deletePerson = (id) => {
+      if (window.confirm(`Do you really want to delete person iD ${id}`)) {
+        console.log('deletePerson:',persons)
+        personSrv.remove(id)
+        .then(
+          updatePersons()
+        )
+        .catch(error => {
+          setErrorMsg(`Note '${id}' was already removed from server`)
+          setTimeout(() => {
+              setErrorMsg(null)
+            }, 5000)
+          })
+        }
+    }
+    
+    const updatePersons = () => {
       personSrv
-      .update(newPersonObject.id,newPersonObject)
+      .getAll()
       .then(response => {
-        console.log('updated number')
+        console.log('updated people')
         console.log(response)
-        updatePersons(response)
+        setPersons(response)
       })
     }
-  }
-
-  useEffect(() => {
-    console.log('effect')
-    personSrv
-    .getAll()
-    .then(response => {
-      console.log('promise fulfilled')
-      setPersons(response)
-    })
-  }, [])
-  
-  
-  return (
-    <div>
+    
+    const updateNumber = (newname,newnumber) => {
+      if (window.confirm(`Do you want to update ${newname} with ${newnumber}`)) {
+        let newperson = persons.find(p => p.name === newname)
+        
+        const newPersonObject = {
+          ...newperson,
+          number: newnumber
+        }
+        personSrv
+        .update(newPersonObject.id,newPersonObject)
+        .then(response => {
+          console.log('updated number')
+          console.log(response)
+          updatePersons(response)
+        })
+      }
+    }
+    
+    const showNotif = (name) => {
+      setNotificationMessage(`Note '${name}' was added to the server`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+      
+      useEffect(() => {
+        console.log('effect')
+        personSrv
+        .getAll()
+        .then(response => {
+          console.log('promise fulfilled')
+          setPersons(response)
+        })
+      }, [])
+      
+      
+      return (
+        <div>
       <h2>Phonebook</h2>
+        <Errornotif message={errorMsg} />
+        <Positivenotif message={notificationMessage} />
         <Search newSearch={newSearch} handleSearch={handleSearch}/>  
       <h3> Add a new </h3>
         <PersonForm 
           process={processPerson} 
           newName={newName} handleNameChange={handleNameChange} 
           newNumber={newNumber} handleNumberChange={handleNumberChange} 
-        />
+          />
       <h3>Numbers</h3>
         <Filter persons={persons} search={newSearch} deletePerson={deletePerson}/>
     </div>
