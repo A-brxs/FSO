@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personSrv from './services/persons'
 
 const Search = (props) => {
   const {newSearch, handleSearch} = props
@@ -75,8 +75,8 @@ const App = () => {
       id: persons.length + 1
     }
     console.log('this is personObject',personObject)
-    axios
-    .post('http://localhost:3001/persons',personObject)
+    personSrv
+    .create(personObject)
     .then(response => {
       console.log('create person response: ',response)
       setPersons(persons.concat(personObject))
@@ -89,14 +89,14 @@ const App = () => {
   
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    personSrv
+      .getAll()
       .then(response => {
         console.log('promise fulfilled')
-        setPersons(response.data)
+        setPersons(response)
+        console.log('render', persons.length)
       })
   }, [])
-  console.log('render', persons.length, 'persons')
 
 
   return (
