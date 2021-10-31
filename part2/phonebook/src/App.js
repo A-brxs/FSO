@@ -68,7 +68,7 @@ const App = () => {
     console.log('this is checkP()',checkPerson()) 
     event.preventDefault()
     checkPerson() 
-    ? window.alert(`${newName} with ${newNumber} is already in the database!`)
+    ? updateNumber(newName,newNumber)
     : addPerson()   
   }
   
@@ -91,7 +91,7 @@ const App = () => {
     })
   }
   
-  const checkPerson = () => persons.find( who => who.name === newName && who.number === newNumber )
+  const checkPerson = () => persons.find( who => who.name === newName && who.number !== newNumber )
   
   const deletePerson = (id) => {
     if (window.confirm(`Do you really want to delete person iD ${id}`)) {
@@ -99,7 +99,7 @@ const App = () => {
       personSrv.remove(id)
       updatePersons()
       }
-    }
+  }
   
   const updatePersons = () => {
     personSrv
@@ -110,6 +110,24 @@ const App = () => {
       setPersons(response)
     })
   }
+  
+  const updateNumber = (newname,newnumber) => {
+    if (window.confirm(`Do you want to update ${newname} with ${newnumber}`)) {
+      let newperson = persons.find(p => p.name === newname)
+
+      const newPersonObject = {
+        ...newperson,
+        number: newnumber
+      }
+      personSrv
+      .update(newPersonObject.id,newPersonObject)
+      .then(response => {
+        console.log('updated number')
+        console.log(response)
+        updatePersons(response)
+      })
+    }
+  }
 
   useEffect(() => {
     console.log('effect')
@@ -118,7 +136,6 @@ const App = () => {
     .then(response => {
       console.log('promise fulfilled')
       setPersons(response)
-      console.log('render', persons.length)
     })
   }, [])
   
