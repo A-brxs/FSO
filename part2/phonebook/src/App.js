@@ -27,16 +27,19 @@ const PersonForm = ({process,newName,handleNameChange,newNumber,handleNumberChan
   )
 }
 
-const Filter = ({persons,search}) => {
+const Filter = ({persons,search,deletePerson}) => {
   const filteredPersons = persons.filter( who => who.name.toLowerCase().includes(search.toLowerCase()) )
   return (
     <div>
       <ul>
-        {filteredPersons.map(person => <li key={person.id}> {person.name}  {person.number} </li>)}
+        {filteredPersons.map(person => <li key={person.id}>
+           {person.name}  {person.number}   <button onClick={() => deletePerson(person.id)}> delete </button>
+           </li>)}
       </ul>
     </div>
   )
 }
+
 
 const App = () => {
   console.log('const App loaded')
@@ -57,6 +60,8 @@ const App = () => {
     console.log('handleSearch',event.target.value)
     setSearch(event.target.value)
   }
+
+  console.log('this is App content of person: ',persons)
   
   const processPerson = (event) => {
     console.log('This is processPerson event:',event)
@@ -69,36 +74,55 @@ const App = () => {
   
   const addPerson = () => {
     console.log('this is persons',persons)
+    const newid = persons.map(p => {return (p.id)})
     const personObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
+      id: Math.max(...newid) + 1
     }
     console.log('this is personObject',personObject)
     personSrv
     .create(personObject)
     .then(response => {
       console.log('create person response: ',response)
-      setPersons(persons.concat(personObject))
+      updatePersons()
       setNewName('')
       setNewNumber('')
-      })
+    })
   }
   
   const checkPerson = () => persons.find( who => who.name === newName && who.number === newNumber )
   
+  const deletePerson = (id) => {
+    if (window.confirm(`Do you really want to delete person iD ${id}`)) {
+      console.log('deletePerson:',persons)
+      personSrv.remove(id)
+      updatePersons()
+      }
+    }
+  
+  const updatePersons = () => {
+    personSrv
+    .getAll()
+    .then(response => {
+      console.log('updated people')
+      console.log(response)
+      setPersons(response)
+    })
+  }
+
   useEffect(() => {
     console.log('effect')
     personSrv
-      .getAll()
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response)
-        console.log('render', persons.length)
-      })
+    .getAll()
+    .then(response => {
+      console.log('promise fulfilled')
+      setPersons(response)
+      console.log('render', persons.length)
+    })
   }, [])
-
-
+  
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -110,7 +134,7 @@ const App = () => {
           newNumber={newNumber} handleNumberChange={handleNumberChange} 
         />
       <h3>Numbers</h3>
-        <Filter persons={persons} search={newSearch}/>
+        <Filter persons={persons} search={newSearch} deletePerson={deletePerson}/>
     </div>
   )
 }
