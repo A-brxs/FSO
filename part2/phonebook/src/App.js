@@ -172,15 +172,15 @@ const App = () => {
       }, 5000)
     }
       
-      useEffect(() => {
-        console.log('effect')
-        personSrv
-        .getAll()
-        .then(response => {
-          console.log('promise fulfilled')
-          setPersons(response)
-        })
-      }, [])
+    useEffect(() => {
+      console.log('effect')
+      personSrv
+      .getAll()
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response)
+      })
+    }, [])
       
       
       return (
