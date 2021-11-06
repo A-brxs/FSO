@@ -1,6 +1,19 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 app.use(express.json())
+
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+morgan.token('body', getBody = (request) => {
+  return JSON.stringify(request.body)
+})
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
   { 
@@ -64,7 +77,6 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  console.log('this is body: ',body)
   if (!body.name) {
     return response.status(400).json({
       error: 'Name Missing'
@@ -79,17 +91,22 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
- const person = {
-   name: body.name,
-   number: body.number,
-   id: getId(16000)
- }
- console.log('this is person: ',person)
-
- persons = persons.concat(person)
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: getId(16000)
+  }
+  
+  persons = persons.concat(person)
 
   response.json(person)
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 
 const PORT = 3001
