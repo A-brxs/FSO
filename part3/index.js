@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
   { 
@@ -30,6 +31,11 @@ let infoMsg = `
     <p>${Date()}</p>
   </div>
   `
+
+const getId = (maxId) => {
+  return Math.floor(Math.random() * maxId)
+}
+
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
@@ -55,8 +61,34 @@ app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
   persons = persons.filter(p => p.id !== id)
   response.status(204).end()
+})
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+  console.log('this is body: ',body)
+  if (!body.name) {
+    return response.status(400).json({
+      error: 'Name Missing'
+    })
+  } else if (!body.number) {
+    return response.status(400).json({
+      error: 'Number Missing'
+    })
+  } else if (persons.find(p => p.name === body.name)) {
+    return response.status(400).json({
+      error: 'Name already exists'
+    })
+  }
 
+ const person = {
+   name: body.name,
+   number: body.number,
+   id: getId(16000)
+ }
+ console.log('this is person: ',person)
 
+ persons = persons.concat(person)
+
+  response.json(person)
 })
 
 
